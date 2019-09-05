@@ -1,0 +1,110 @@
+---
+title: "02-assignment_lin"
+author: "Chau-Fang Lin"
+date: "9/3/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Load libraries needed
+library(tidyverse)
+library(Metrics)
+library(plotly)
+
+```
+
+## Assignment 2
+
+```{r pd data}
+
+#Load the county level homeownership data
+
+county_level_data <- load("pd.Rdata")
+
+#Load pd data codebook
+
+pd_codebook<-load("pd_lab_explain.Rdata")
+
+```
+
+
+## Question 1
+
+```{r}
+
+#Calculate the mean of the outcome (homeownership rates) -> simple average
+
+pd%>%summarize(avg_homeownership=mean(homeown_rate,na.rm = TRUE))
+
+```
+
+The average homeownership rate is 72.7%.
+
+## Question 2
+
+```{r}
+
+#Using the mean from Q1 as a prediction, create a new variable that consists of the mean of the outcome.
+
+pd <- pd %>% mutate(avg_homeownership=mean(homeown_rate,na.rm = TRUE))
+
+```
+
+
+## Question 3
+
+```{r}
+
+#Calculate a summary measure of the errors for each observation - the difference between your prediction and the outcome using the root mean squared error
+
+rmse_uncond_mean <- rmse(pd$homeown_rate,pd$avg_homeownership)
+
+rmse_uncond_mean
+
+
+```
+
+The RMSE for the average rate of homeownership is 7.65%.  This means that, on average, there is 7.65% error in the estimated rate of home ownership.
+
+
+## Question 4
+
+```{r}
+
+#Calculate the mean outcome at levels of a predictor variable.  I will use percentage of college graduates in a county as my predictor.
+
+#First, I will divide the college precentage of college graduates into quantiles
+pd <- pd %>% mutate(coll_grad_level=ntile(coll_grad_pc,4))
+
+#Then, I will group the data by the quantiles in preparation of calculating conditional means across the quantiles
+pd <- pd %>%group_by(coll_grad_level) %>% 
+  mutate(pred_homeownership=mean(homeown_rate)) %>%
+  ungroup() %>%
+  mutate(pred_homeownership_rank=rank(pred_homeownership,ties.method="random"))
+```
+
+## Question 5
+```{r}
+
+#Use the conditional means as a prediction: for every county, use the conditional mean to provide a "best guess" as to that county's level of the predicted homeownership rate.
+
+pd %>% select(county,coll_grad_pc,coll_grad_level,pred_homeownership)%>%view()
+
+```
+
+
+## Question 6
+
+```{r}
+
+#Calculate a summary measure of the errors in your predictions.  Error is actual homeownership rate - predicted homeownership rate.
+
+rmse_cond_mean <- rmse(pd$homeown_rate,pd$pred_homeownership)
+
+rmse_cond_mean
+
+```
+
+The RMSE for the average rate of homeownership is 7.42%.  This means that, on average, there is 7.42% error in the estimated rate of home ownership.

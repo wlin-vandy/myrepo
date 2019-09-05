@@ -1,0 +1,139 @@
+---
+title: "03-assignment_lin"
+author: "Chau-Fang Lin"
+date: "9/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Load libraries needed
+
+library(tidyverse)
+library(forcats)
+library(RColorBrewer)
+library(knitr)
+
+```
+
+
+```{r}
+
+#Load attrition data
+
+load("attrition.Rdata")
+
+```
+
+## Question 1
+
+```{r}
+
+#Create a graph that shows the distribution of monthly income. Since income is a continuous variable, I will use a histogram for this univariate graph.
+
+gg_income<-ggplot(at,aes(x=MonthlyIncome))
+gg_income<-gg_income+geom_histogram(bindwidth=100,fill="blue")
+gg_income<-gg_income+xlab("Monthly Income")+ylab("Number of Employees Earning Monthly Income")
+gg_income<-gg_income+ggtitle("Distribution of Monthly Income")
+gg_income
+
+```
+
+
+## Question 2
+
+```{r}
+
+#Create a graph that shows the average level of monthly income by field of education.
+
+#Add a new variable to the dataset for average monthly income by education field ("avg_MonthlyIncome")
+#at<-at%>%
+#  group_by(EducationField)%>%
+#  mutate(avg_MonthlyIncome=mean(MonthlyIncome))%>%
+#  ungroup
+
+#Look at the data with the new variable.
+#at
+
+#create a new object summarizing the average monthly income by education field.
+at_inc.edu<-at%>%
+  group_by(EducationField)%>%
+  summarise(avg_MonthlyIncome=mean(MonthlyIncome))
+  
+#Plot the average monthly income by education field as a bar graph, by descending average monthly income.
+gg_inc.edu<-ggplot(at_inc.edu,aes(x=reorder(EducationField,-avg_MonthlyIncome),y=avg_MonthlyIncome))
+#gg_inc.edu<-gg_inc.edu+geom_point(color="blue",size=5)
+gg_inc.edu<-gg_inc.edu+geom_bar(stat="identity",fill="blue",color="blue")
+gg_inc.edu<-gg_inc.edu+xlab("Education Field")+ylab("Average Monthly Income")
+#gg_inc.edu<-gg_inc.edu+coord_flip()
+gg_inc.edu
+
+```
+
+
+```{r}
+
+
+#REMOVE CODE
+#Calculate average monthly income by field of education and create another variable "avg_MonthlyIncome" to store this data
+at_inc.edu<-at%>%
+  group_by(EducationField)%>%
+  summarise(avg_MonthlyIncome = mean(MonthlyIncome))
+
+at_inc.edu
+
+gg_inc.edu<-ggplot(at_inc.edu,aes(x=fct_reorder(EducationField,-avg_MonthlyIncome),y=avg_MonthlyIncome))
+#gg_inc.edu<-gg_inc.edu+geom_point(color="blue",size=5)
+gg_inc.edu<-gg_inc.edu+geom_bar(stat="identity")
+gg_inc.edu<-gg_inc.edu+xlab("Education Field")+ylab("Average Monthly Income")
+#gg_inc.edu<-gg_inc.edu+coord_flip()
+gg_inc.edu
+
+
+```
+
+## Question 3
+
+```{r}
+
+#Create another graph that shows the average level of monthly income by field of education and gender.
+
+at_deptgen<-at%>%
+  group_by(EducationField,Gender)%>%
+  summarise(avg_MonthlyIncome=mean(MonthlyIncome))
+
+at_deptgen
+
+gg_inc.edu.gender<-ggplot(at_deptgen, aes(x=fct_reorder(EducationField,-avg_MonthlyIncome),y=avg_MonthlyIncome))
+gg_inc.edu.gender<-gg_inc.edu.gender+geom_bar(stat="identity",aes(fill = Gender),position = "dodge")
+gg_inc.edu.gender<-gg_inc.edu.gender+xlab("Education Field")+ylab("Average Monthly Income")
+gg_inc.edu.gender<-gg_inc.edu.gender+ggtitle("Average Level of Monthly Income by Education Field and Gender")
+gg_inc.edu.gender
+
+```
+
+## Question 4
+
+```{r}
+
+#Create a graph that shows the average levels of monthly incomeby field of education, gender, and job level (scale of 1-5, highest ranked employees as 5).
+
+at_dept.gen.lev<-at%>%
+  group_by(EducationField,Gender,JobLevel)%>%
+  summarise(avg_MonthlyIncome=mean(MonthlyIncome))
+
+at_dept.gen.lev
+
+gg_dept.gen.lev<-ggplot(at_dept.gen.lev,aes(x=reorder(EducationField,-avg_MonthlyIncome),y=avg_MonthlyIncome,fill=Gender))
+gg_dept.gen.lev<-gg_dept.gen.lev+geom_bar(stat="identity",position="dodge")
+gg_dept.gen.lev<-gg_dept.gen.lev+facet_grid(~JobLevel)
+gg_dept.gen.lev<-gg_dept.gen.lev+xlab("Education Field")+ylab("Average Monthly Income")
+gg_dept.gen.lev<-gg_dept.gen.lev+theme(axis.text.x = element_text(angle = 60, hjust = 1))
+gg_dept.gen.lev<-gg_dept.gen.lev+ggtitle("Average Monthly Income by Education Field, Gender, and Job Level")
+#gg_dept.gen.lev<-gg_dept.gen.lev+coord_flip()
+gg_dept.gen.lev
+
+
+```
+

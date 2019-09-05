@@ -1,0 +1,95 @@
+---
+title: "01-assignment_lin"
+author: "Chau-Fang Lin"
+date: "8/28/2019"
+output: html_document
+---
+
+# Assignment 1
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Load libraries needed for assignment
+
+library(tidyverse)
+library(Metrics)
+library(plotly)
+```
+
+## Question 1
+
+1. Print Hello, World
+
+```{r hello world}
+
+##Print Hello, World
+
+"Hello, World"
+
+```
+
+## Question 2.1
+
+```{r college data income}
+
+# Load college. Rdata
+
+load ("college.Rdata")
+
+# Calculate the average earnings for the most selective schools
+
+sc%>%filter(adm_rate<.1)%>%summarize(mean_earnings=mean(md_earn_wne_p6, na.rm = TRUE))
+
+# Calculate the average earning for the least selective school
+
+sc%>%filter(adm_rate>.3)%>%summarize(mean_earnings=mean(md_earn_wne_p6,na.rm = TRUE))
+
+```
+
+The average earnings of students who attended the most selective selective (admit rate < 10%) colleges (53,500) is greather than the average earnings of studentswho attended the lease selective (admit rate > 30%) colleges (34,747.14).
+
+## Question 2.2
+
+```{r college data SATsize}
+
+# Calculate average number of undergrads for schools with high average SAT scores
+
+sc%>%filter(sat_avg>1400) %>% summarize(mean_ugrads=mean(ugds))
+
+# Calculate average number of undergrads for schools with low average SAT scores
+
+sc%>%filter(sat_avg<1000) %>% summarize(mean_ugrads=mean(ugds))
+
+```
+Colleges with students who have high average SAT scores (average SAT > 1400) tend to be larger than colleges with students who have low average SAT scores (average SAT score < 1000).
+
+## Question 2.3
+
+```{r cost x debt plot}
+
+# Plot the relationship between cost and debt.
+
+gg_costdebt <- ggplot(data=sc, aes(x=costt4_a,y=debt_mdn, text=instnm))
+
+gg_costdebt <- gg_costdebt + geom_point(alpha=.5,size=1)
+
+gg_costdebt <- gg_costdebt+xlab("Cost")+ylab("Debt")
+
+gg_costdebt
+
+```
+
+The scatter plot of the cost and debt by institution suggest that there is no relationship between the cost to attend an institution and the amount of debt that a student accrues.
+
+## Question 2.4
+
+```{r control}
+
+# Provide separate plots of cost and debt by control of institution.
+
+gg_costdebt + facet_wrap(~control,nrow=1)
+
+```
+
