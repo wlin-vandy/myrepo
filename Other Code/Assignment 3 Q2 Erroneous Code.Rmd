@@ -1,0 +1,51 @@
+---
+title: "Assignment 2 Bad Code"
+author: "Chau-Fang Lin"
+date: "9/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+
+#REMOVE CODE
+#Calculate average monthly income by field of education and create another variable "avg_MonthlyIncome" to store this data
+at_inc.edu<-at%>%
+  group_by(EducationField)%>%
+  summarise(avg_MonthlyIncome = mean(MonthlyIncome))
+
+at_inc.edu
+
+gg_inc.edu<-ggplot(at_inc.edu,aes(x=fct_reorder(EducationField,-avg_MonthlyIncome),y=avg_MonthlyIncome))
+#gg_inc.edu<-gg_inc.edu+geom_point(color="blue",size=5)
+gg_inc.edu<-gg_inc.edu+geom_bar(stat="identity")
+gg_inc.edu<-gg_inc.edu+xlab("Education Field")+ylab("Average Monthly Income")
+#gg_inc.edu<-gg_inc.edu+coord_flip()
+gg_inc.edu
+
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
